@@ -16,7 +16,7 @@ from IPython import embed
 from gymnasium_wrappers.utils import *
 from gymnasium_wrappers.models import *
 from gymnasium_wrappers.args import parse_args_dqn
-from gym.wrappers.normalize import RunningMeanStd
+from gymnasium.wrappers.normalize import RunningMeanStd
 
 
 def linear_schedule(start_e: float, end_e: float, duration: int, t: int):

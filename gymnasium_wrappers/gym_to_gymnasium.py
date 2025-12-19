@@ -4,7 +4,6 @@ from gymnasium.spaces import Discrete, Box, Dict
 from IPython import embed
 
 
-
 # Some envs do not support gymnasium, this simple wrapper is to convert from gym to gymnasium api
 class GymToGymnasium(gym.Env):
     def __init__(self, env, render_mode, max_steps):

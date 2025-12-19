@@ -5,7 +5,7 @@ import os
 from IPython import embed
 
 # read json file
-with open('/home/roger/Desktop/surprise-adaptive-agents/plots/tetris_surprise_eval.json') as f:
+with open('/home/damiya/surprise-adaptive-agents/plots/tetris_surprise_eval.json') as f:
     data = json.load(f)
 
 runs_name = [d["name"] for d in data]

@@ -1,15 +1,17 @@
 import gymnasium as gym
-import gym as old_gym
+# import gym as old_gym
 import csv_logger
 import logging
 import matplotlib.pyplot as plt
 import minatar
 import torch
 import numpy as np
+import imageio
+from pathlib import Path
 from gymnasium_wrappers.base_surprise import BaseSurpriseWrapper
 from gymnasium_wrappers.base_sadapt import BaseSurpriseAdaptWrapper
 from gymnasium_wrappers.base_surprise_adapt_bandit import BaseSurpriseAdaptBanditWrapper
-from gymnasium_wrappers.gym_to_gymnasium import GymToGymnasium
+# from gymnasium_wrappers.gym_to_gymnasium import GymToGymnasium
 from gymnasium_wrappers.obs_resize import ResizeObservationWrapper
 from gymnasium_wrappers.obs_history import ObsHistoryWrapper
 from gymnasium_wrappers.rendering_wrapper import RenderObservationWrapper
@@ -82,32 +84,32 @@ def make_env(args):
             o_, _ = env.reset()
             obs_size = o_.shape
 
-        elif "griddly" in args.env_id:
-            # for instance griddly-MazeEnv
-            register_griddly_envs()
-            griddly_env_name = args.env_id.split('-')[-1]
-            if "MazeEnv2" in griddly_env_name:
-                max_steps = 100
-            elif griddly_env_name in ["MazeEnvLarge", "MazeEnvLarge2"]:
-                max_steps = 250
-            else:
-                max_steps = 500
-            env = old_gym.make(f"GDY-{griddly_env_name}-v0", player_observer_type=gd.ObserverType.VECTOR, global_observer_type=gd.ObserverType.VECTOR)
-            o_ = env.reset()
-            obs_size = o_.shape
+        # elif "griddly" in args.env_id:
+        #     # for instance griddly-MazeEnv
+        #     register_griddly_envs()
+        #     griddly_env_name = args.env_id.split('-')[-1]
+        #     if "MazeEnv2" in griddly_env_name:
+        #         max_steps = 100
+        #     elif griddly_env_name in ["MazeEnvLarge", "MazeEnvLarge2"]:
+        #         max_steps = 250
+        #     else:
+        #         max_steps = 500
+        #     env = old_gym.make(f"GDY-{griddly_env_name}-v0", player_observer_type=gd.ObserverType.VECTOR, global_observer_type=gd.ObserverType.VECTOR)
+        #     o_ = env.reset()
+        #     obs_size = o_.shape
             
-            if "MazeEnv" in griddly_env_name:
-                from surprise.envs.maze.maze_env import MazeEnv
-                env = MazeEnv(env)
-            elif "ButterfliesEnv" in griddly_env_name:
-                from surprise.envs.maze.butterflies_latest import ButterfliesEnv
-                env = ButterfliesEnv(env)
-                # discard spiders and cocoons and player
-                obs_size = (obs_size[0] - 3, obs_size[1], obs_size[2])
-            else:
-                raise ValueError(f"Unknown griddly env {griddly_env_name}")
+        #     if "MazeEnv" in griddly_env_name:
+        #         from surprise.envs.maze.maze_env import MazeEnv
+        #         env = MazeEnv(env)
+        #     elif "ButterfliesEnv" in griddly_env_name:
+        #         from surprise.envs.maze.butterflies_latest import ButterfliesEnv
+        #         env = ButterfliesEnv(env)
+        #         # discard spiders and cocoons and player
+        #         obs_size = (obs_size[0] - 3, obs_size[1], obs_size[2])
+        #     else:
+        #         raise ValueError(f"Unknown griddly env {griddly_env_name}")
             
-            env = GymToGymnasium(env, render_mode="rgb_array", max_steps=max_steps)
+        #     env = GymToGymnasium(env, render_mode="rgb_array", max_steps=max_steps)
 
         elif "Atari" in args.env_id:
             atari_env_name = args.env_id.split('-')[-1]
@@ -291,26 +293,240 @@ def log_heatmap(env, heatmap, ep_counter, writer, save_path):
     plt.savefig(f"{save_path}/heatmap_{ep_counter}.png")
     writer.add_figure(f"trajectory/heatmap_{ep_counter}", fig, close=True)
     plt.clf()
-    
-def register_griddly_envs():
-    env_dict = old_gym.envs.registration.registry.env_specs.copy()
-    for env in env_dict:
-        if 'ButterfliesEnv' in env or 'MazeEnv' in env:
-            print("Remove {} from registry".format(env))
-            del old_gym.envs.registration.registry.env_specs[env]
 
-    wrapper = GymWrapperFactory()
-    wrapper.build_gym_from_yaml('MazeEnv', f"{os.getcwd()}/surprise/envs/maze/maze_env.yaml")
-    wrapper.build_gym_from_yaml('MazeEnv2', f"{os.getcwd()}/surprise/envs/maze/maze_env2.yaml")
-    wrapper.build_gym_from_yaml('MazeEnvLarge', f"{os.getcwd()}/surprise/envs/maze/maze_env_large.yaml")
-    wrapper.build_gym_from_yaml('MazeEnvLarge2', f"{os.getcwd()}/surprise/envs/maze/maze_env_large2.yaml")
-    wrapper.build_gym_from_yaml('ButterfliesEnv', f"{os.getcwd()}/surprise/envs/maze/butterflies.yaml")
-    wrapper.build_gym_from_yaml('ButterfliesEnvLarge', f"{os.getcwd()}/surprise/envs/maze/butterflies_large.yaml")
-    wrapper.build_gym_from_yaml('ButterfliesEnvLarge2', f"{os.getcwd()}/surprise/envs/maze/butterflies_large2.yaml")
-    wrapper.build_gym_from_yaml('ButterfliesEnvLarge3', f"{os.getcwd()}/surprise/envs/maze/butterflies_large3.yaml")
-    wrapper.build_gym_from_yaml('ButterfliesEnvLarge4', f"{os.getcwd()}/surprise/envs/maze/butterflies_large4.yaml")
-    wrapper.build_gym_from_yaml('ButterfliesEnvLarge5', f"{os.getcwd()}/surprise/envs/maze/butterflies_large5.yaml")
-    wrapper.build_gym_from_yaml('ButterfliesEnvLarge6', f"{os.getcwd()}/surprise/envs/maze/butterflies_large6.yaml")
-    wrapper.build_gym_from_yaml('ButterfliesEnvLarge7', f"{os.getcwd()}/surprise/envs/maze/butterflies_large7.yaml")
-    wrapper.build_gym_from_yaml('ButterfliesEnvLarge8', f"{os.getcwd()}/surprise/envs/maze/butterflies_large8.yaml")
+
+# def _vector_env_frame(eval_envs):
+#     """Safely fetch a rendered frame from a SyncVectorEnv."""
+#     try:
+#         frames = eval_envs.call("render")
+#     except Exception:
+#         return None
+#     if isinstance(frames, (list, tuple)) and len(frames) > 0:
+#         return frames[0]
+#     return frames
+
+
+# def _obs_to_device(obs, device):
+#     if isinstance(obs, dict):
+#         return {k: torch.as_tensor(v).to(device) for k, v in obs.items()}
+#     return torch.as_tensor(obs).to(device)
+
+
+# def _write_video(frames, video_dir, filename, fps=20):
+#     valid_frames = []
+#     for frame in frames:
+#         if frame is None:
+#             continue
+#         frame_arr = np.asarray(frame)
+#         if frame_arr.dtype != np.uint8:
+#             frame_arr = np.clip(frame_arr, 0, 255).astype(np.uint8)
+#         valid_frames.append(frame_arr)
+#     if not valid_frames:
+#         return None
+
+#     video_path = Path(video_dir)
+#     video_path.mkdir(parents=True, exist_ok=True)
+#     video_file = video_path / filename
+#     with imageio.get_writer(video_file, fps=fps) as writer:
+#         for frame in valid_frames:
+#             writer.append_data(frame)
+#     return video_file
+
+
+# def _log_wandb_video(video_path, metrics, global_step, video_key):
+#     if video_path is None:
+#         return
+#     try:
+#         import wandb
+#     except ImportError:
+#         logging.warning("wandb is not installed; skipping video upload.")
+#         return
+
+#     payload = dict(metrics)
+#     payload[video_key] = wandb.Video(str(video_path), fps=20, format="mp4")
+#     wandb.log(payload, step=global_step)
+
+
+# def eval_episode_dqn(
+#     q_network,
+#     eval_envs,
+#     device,
+#     save_path,
+#     global_step,
+#     env_id,
+#     track,
+#     random=False,
+#     max_steps=10000,
+# ):
+#     """Roll out one evaluation episode for DQN-style agents and save a video."""
+
+#     if not random and q_network is None:
+#         raise ValueError("q_network must be provided unless `random=True`.")
+
+#     frames = []
+#     obs, _ = eval_envs.reset()
+#     frame = _vector_env_frame(eval_envs)
+#     if frame is not None:
+#         frames.append(frame)
+
+#     total_reward = 0.0
+#     steps = 0
+#     done = False
+#     episode_info = None
+
+#     if q_network is not None:
+#         was_training = q_network.training
+#         q_network.eval()
+#     else:
+#         was_training = None
+
+#     try:
+#         while not done and steps < max_steps:
+#             if random or q_network is None:
+#                 action = np.array([eval_envs.single_action_space.sample()])
+#             else:
+#                 obs_tensor = _obs_to_device(obs, device)
+#                 with torch.no_grad():
+#                     logits = q_network(obs_tensor)
+#                     action = torch.argmax(logits, dim=1).cpu().numpy()
+
+#             next_obs, reward, terminated, truncated, infos = eval_envs.step(action)
+#             total_reward += float(reward[0])
+#             done = bool(terminated[0] or truncated[0])
+#             steps += 1
+
+#             if done and "final_info" in infos and infos["final_info"]:
+#                 episode_info = infos["final_info"][0]
+
+#             obs = next_obs
+#             frame = _vector_env_frame(eval_envs)
+#             if frame is not None:
+#                 frames.append(frame)
+#     finally:
+#         if q_network is not None and was_training is not None:
+#             q_network.train(was_training)
+
+#     video_prefix = "random" if random else "policy"
+#     video_dir = Path(save_path) / "videos" / env_id.replace("/", "_")
+#     video_name = f"dqn_{video_prefix}_step_{global_step:09d}.mp4"
+#     video_path = _write_video(frames, video_dir, video_name)
+
+#     metrics = {
+#         "eval/episode_reward": total_reward,
+#         "eval/episode_length": steps,
+#     }
+#     if episode_info and "Average_task_return" in episode_info:
+#         metrics["eval/average_task_return"] = episode_info["Average_task_return"]
+
+#     logging.info(
+#         "Eval DQN (%s) reward=%.2f length=%d video=%s",
+#         "random" if random else "policy",
+#         total_reward,
+#         steps,
+#         video_path,
+#     )
+
+#     if track:
+#         _log_wandb_video(video_path, metrics, global_step, f"eval/{video_prefix}_video")
+
+#     eval_envs.reset()
+#     return metrics
+
+
+# def eval_episode_ppo(
+#     agent,
+#     eval_envs,
+#     device,
+#     save_path,
+#     global_step,
+#     track=False,
+#     max_steps=10000,
+# ):
+#     """Roll out one evaluation episode for PPO agents and save a video."""
+
+#     if agent is None:
+#         raise ValueError("agent must be provided for PPO evaluation.")
+
+#     frames = []
+#     obs, _ = eval_envs.reset()
+#     frame = _vector_env_frame(eval_envs)
+#     if frame is not None:
+#         frames.append(frame)
+
+#     total_reward = 0.0
+#     steps = 0
+#     done = False
+#     episode_info = None
+
+#     was_training = agent.training
+#     agent.eval()
+
+#     try:
+#         while not done and steps < max_steps:
+#             obs_tensor = _obs_to_device(obs, device)
+#             with torch.no_grad():
+#                 action, _, _, _ = agent.get_action_and_value(obs_tensor)
+#             action_np = action.detach().cpu().numpy()
+
+#             next_obs, reward, terminated, truncated, infos = eval_envs.step(action_np)
+#             total_reward += float(reward[0])
+#             done = bool(terminated[0] or truncated[0])
+#             steps += 1
+
+#             if done and "final_info" in infos and infos["final_info"]:
+#                 episode_info = infos["final_info"][0]
+
+#             obs = next_obs
+#             frame = _vector_env_frame(eval_envs)
+#             if frame is not None:
+#                 frames.append(frame)
+#     finally:
+#         agent.train(was_training)
+
+#     video_dir = Path(save_path) / "videos"
+#     video_name = f"ppo_step_{global_step:09d}.mp4"
+#     video_path = _write_video(frames, video_dir, video_name)
+
+#     metrics = {
+#         "eval/ppo_episode_reward": total_reward,
+#         "eval/ppo_episode_length": steps,
+#     }
+#     if episode_info and "Average_task_return" in episode_info:
+#         metrics["eval/ppo_average_task_return"] = episode_info["Average_task_return"]
+
+#     logging.info(
+#         "Eval PPO reward=%.2f length=%d video=%s",
+#         total_reward,
+#         steps,
+#         video_path,
+#     )
+
+#     if track:
+#         _log_wandb_video(video_path, metrics, global_step, "eval/ppo_video")
+
+#     eval_envs.reset()
+#     return metrics
+ 
+    
+# def register_griddly_envs():
+#     env_dict = old_gym.envs.registration.registry.env_specs.copy()
+#     for env in env_dict:
+#         if 'ButterfliesEnv' in env or 'MazeEnv' in env:
+#             print("Remove {} from registry".format(env))
+#             del old_gym.envs.registration.registry.env_specs[env]
+
+#     wrapper = GymWrapperFactory()
+#     wrapper.build_gym_from_yaml('MazeEnv', f"{os.getcwd()}/surprise/envs/maze/maze_env.yaml")
+#     wrapper.build_gym_from_yaml('MazeEnv2', f"{os.getcwd()}/surprise/envs/maze/maze_env2.yaml")
+#     wrapper.build_gym_from_yaml('MazeEnvLarge', f"{os.getcwd()}/surprise/envs/maze/maze_env_large.yaml")
+#     wrapper.build_gym_from_yaml('MazeEnvLarge2', f"{os.getcwd()}/surprise/envs/maze/maze_env_large2.yaml")
+#     wrapper.build_gym_from_yaml('ButterfliesEnv', f"{os.getcwd()}/surprise/envs/maze/butterflies.yaml")
+#     wrapper.build_gym_from_yaml('ButterfliesEnvLarge', f"{os.getcwd()}/surprise/envs/maze/butterflies_large.yaml")
+#     wrapper.build_gym_from_yaml('ButterfliesEnvLarge2', f"{os.getcwd()}/surprise/envs/maze/butterflies_large2.yaml")
+#     wrapper.build_gym_from_yaml('ButterfliesEnvLarge3', f"{os.getcwd()}/surprise/envs/maze/butterflies_large3.yaml")
+#     wrapper.build_gym_from_yaml('ButterfliesEnvLarge4', f"{os.getcwd()}/surprise/envs/maze/butterflies_large4.yaml")
+#     wrapper.build_gym_from_yaml('ButterfliesEnvLarge5', f"{os.getcwd()}/surprise/envs/maze/butterflies_large5.yaml")
+#     wrapper.build_gym_from_yaml('ButterfliesEnvLarge6', f"{os.getcwd()}/surprise/envs/maze/butterflies_large6.yaml")
+#     wrapper.build_gym_from_yaml('ButterfliesEnvLarge7', f"{os.getcwd()}/surprise/envs/maze/butterflies_large7.yaml")
+#     wrapper.build_gym_from_yaml('ButterfliesEnvLarge8', f"{os.getcwd()}/surprise/envs/maze/butterflies_large8.yaml")
     
