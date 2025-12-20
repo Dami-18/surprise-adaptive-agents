@@ -11,7 +11,6 @@ from pathlib import Path
 from gymnasium_wrappers.base_surprise import BaseSurpriseWrapper
 from gymnasium_wrappers.base_sadapt import BaseSurpriseAdaptWrapper
 from gymnasium_wrappers.base_surprise_adapt_bandit import BaseSurpriseAdaptBanditWrapper
-# from gymnasium_wrappers.gym_to_gymnasium import GymToGymnasium
 from gymnasium_wrappers.obs_resize import ResizeObservationWrapper
 from gymnasium_wrappers.obs_history import ObsHistoryWrapper
 from gymnasium_wrappers.rendering_wrapper import RenderObservationWrapper
@@ -30,7 +29,6 @@ from stable_baselines3.common.atari_wrappers import (
     MaxAndSkipEnv,
     NoopResetEnv,
 )
-
 
 class RecordEpisodeStatistics(gym.Wrapper):
     def __init__(self, env, deque_size=100):
@@ -71,14 +69,14 @@ def make_env(args):
         grayscale = None
         threshold = 300
         ############ Create environment ############            
-        if "tetris" in args.env_id:
-            from surprise.envs.tetris.tetris import TetrisEnv
-            env = TetrisEnv()
-            max_steps = 500
-            obs_size = (1,env.observation_space.shape[0])    
+        # if "tetris" in args.env_id:
+        #     from surprise.envs.tetris.tetris import TetrisEnv
+        #     env = TetrisEnv()
+        #     max_steps = 500
+        #     obs_size = (1,env.observation_space.shape[0])    
         
         # simplified, miniaturized versions of select Atari games, faster training 
-        elif "MinAtar" in args.env_id:
+        if "MinAtar" in args.env_id:
             env = gym.make(args.env_id+"-v1", render_mode='rgb_array', max_episode_steps=500)
             from gymnasium_wrappers.wrappers import ImageTranspose
             env = ImageTranspose(env)

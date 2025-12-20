@@ -98,6 +98,8 @@ def parse_args_dqn():
                         help="Weighting term on the intrinsic reward")
     parser.add_argument("--bandit_step_size", type=float, default=-1, 
                         help="Bandit update step size, this is for experimenting with non stationary bandit updates")
+    parser.add_argument("--add_random_obs", type=int, default=0, 
+                        help="Add random observations for ablation studies")
     
     args = parser.parse_args()
     
