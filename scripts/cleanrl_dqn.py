@@ -123,7 +123,7 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
 
     # TRY NOT TO MODIFY: start the game
     obs, _ = envs.reset(seed=args.seed)
-    eval_episode_dqn(None, eval_envs, device, f"runs/{run_name}", 0, args.env_id, args.track, random=True)
+    # eval_episode_dqn(None, eval_envs, device, f"runs/{run_name}", 0, args.env_id, args.track, random=True)
     if args.normalize_int_reward:
         if "bandit" not in args.model:
             rms = RunningMeanStd()
@@ -281,7 +281,7 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
                     )
 
             if global_step % args.video_log_freq == 0:
-                eval_episode_dqn(q_network, eval_envs, device, f"runs/{run_name}", global_step, args.env_id, args.track)
+                # eval_episode_dqn(q_network, eval_envs, device, f"runs/{run_name}", global_step, args.env_id, args.track)
 
                 model_path = f"runs/{run_name}/dqn.pt"
                 torch.save(q_network.state_dict(), model_path)

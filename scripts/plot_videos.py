@@ -16,6 +16,7 @@ envs = gym.vector.SyncVectorEnv([make_env(args) for i in range(1)])
 embed()
 
 agent = MinAtarQNetwork(envs, use_theta=use_theta)
+# will need to change this path to own model path
 state_dict = torch.load('/home/roger/Desktop/surprise-adaptive-agents/runs/dqn_griddly-MazeEnv_smax_buffer:bernoulli_withExtrinsic:False_softreset:0_reweard_normalization:1_exp_rew:0_death_cost:0_survival_rew:0_seed:1/dqn.pt')
 agent.load_state_dict(state_dict)
 

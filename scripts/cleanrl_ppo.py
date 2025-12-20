@@ -5,7 +5,7 @@ import random
 import time
 from distutils.util import strtobool
 
-from gym.wrappers.normalize import RunningMeanStd
+from gymnasium.wrappers.normalize import RunningMeanStd
 import gymnasium as gym
 import numpy as np
 import torch
@@ -287,8 +287,9 @@ if __name__ == "__main__":
         print("SPS:", int(global_step / (time.time() - start_time)))
         writer.add_scalar("charts/SPS", int(global_step / (time.time() - start_time)), global_step)
         
-        if update_idx % args.video_log_freq == 0:
-            eval_episode_ppo(agent, eval_envs, device, f"runs/{run_name}", global_step)
+        # # remove for now, will plot videos later
+        # if update_idx % args.video_log_freq == 0:
+        #     eval_episode_ppo(agent, eval_envs, device, f"runs/{run_name}", global_step)
 
         update_idx += 1
 

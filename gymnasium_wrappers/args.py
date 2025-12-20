@@ -32,7 +32,7 @@ def parse_args_dqn():
         help="the frequency of logging videos for ppo iterations")
 
     # Algorithm specific arguments
-    parser.add_argument("--env_id", type=str, default="griddly-ButterfliesEnvLarge",
+    parser.add_argument("--env_id", type=str, default="MinAtar/Freeway", # remove griddly based default env
         help="the id of the environment")
     parser.add_argument("--total_timesteps", type=int, default=5_000_000,
         help="total timesteps of the experiments")
@@ -234,7 +234,7 @@ def parse_args_random():
         help="the user or org name of the model repository from the Hugging Face Hub")
 
     # Algorithm specific arguments
-    parser.add_argument("--env_id", type=str, default="SurpriseAdaptRooms-v0",
+    parser.add_argument("--env_id", type=str, default="SurpriseAdaptRooms-v0", 
         help="the id of the environment")
     parser.add_argument("--total_timesteps", type=int, default=10_000_000,
         help="total timesteps of the experiments")

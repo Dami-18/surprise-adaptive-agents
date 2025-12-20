@@ -83,7 +83,7 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
     # TRY NOT TO MODIFY: start the game
     obs, _ = envs.reset(seed=args.seed)
     # Record the random agent
-    eval_episode_dqn(None, eval_envs, device, f"runs/{run_name}", 0, args.env_id, args.track, random=True)
+    # eval_episode_dqn(None, eval_envs, device, f"runs/{run_name}", 0, args.env_id, args.track, random=True)
     for global_step in range(args.total_timesteps):
         # ALGO LOGIC: put action logic here
         actions = np.array([envs.single_action_space.sample() for _ in range(envs.num_envs)])
@@ -141,8 +141,9 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
         for idx, d in enumerate(truncated):
             if d:
                 real_next_obs[idx] = infos["final_observation"][idx]
-        if global_step % args.video_log_freq == 0:
-            eval_episode_dqn(None, eval_envs, device, f"runs/{run_name}", 0, args.env_id, args.track, random=True)
+        # if global_step % args.video_log_freq == 0:
+        #     eval_episode_dqn(None, eval_envs, device, f"runs/{run_name}", 0, args.env_id, args.track, random=True)
+
         # TRY NOT TO MODIFY: CRUCIAL step easy to overlook
         obs = next_obs
         
