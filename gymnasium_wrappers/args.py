@@ -34,13 +34,13 @@ def parse_args_dqn():
     # Algorithm specific arguments
     parser.add_argument("--env_id", type=str, default="MinAtar/Freeway", # remove griddly based default env
         help="the id of the environment")
-    parser.add_argument("--total_timesteps", type=int, default=5_000_000,
+    parser.add_argument("--total_timesteps", type=int, default=2_000_000,
         help="total timesteps of the experiments")
     parser.add_argument("--learning_rate", type=float, default=1e-4,
         help="the learning rate of the optimizer")
     parser.add_argument("--num_envs", type=int, default=1,
         help="the number of parallel game environments")
-    parser.add_argument("--buffer_size", type=int, default=1_000_000,
+    parser.add_argument("--buffer_size", type=int, default=250_000,
         help="the replay memory buffer size")
     parser.add_argument("--gamma", type=float, default=0.99,
         help="the discount factor gamma")
@@ -107,8 +107,6 @@ def parse_args_dqn():
         assert args.buffer_type == "bernoulli", "tetris only supports bernoulli buffer"
     
     assert args.num_envs == 1, "vectorized envs are not supported at the moment"
-
-    # run_name = f"dqn_{args.env_id}_{args.model}_buffer:{args.buffer_type}_withExtrinsic:{args.add_true_rew}_softreset:{args.soft_reset}_seed:{args.seed}"
 
     run_name = f"dqn_{args.env_id}_{args.model}_buffer:{args.buffer_type}_withExtrinsic:{args.add_true_rew}_softreset:{args.soft_reset}_reweard_normalization:{args.normalize_int_reward}_exp_rew:{args.exp_rew}_death_cost:{args.death_cost}_survival_rew:{args.survival_rew}_buffer_size:{args.buffer_size}_use_surprise_{args.use_surprise}_train_freq:{args.train_frequency}_int_rew_scale:{args.int_rew_scale}_seed:{args.seed}"
 
