@@ -26,11 +26,12 @@ cd surprise-adaptive-agents
 conda create --name s_adapt python=3.9.18
 pip install -r requirements.txt
 pip install -e .
+conda activate s_adapt
 ```
 ### Running Experiments
 To launce an experiments you can run the following
 ```bash
-python scripts/cleanrl_dqn.py --env_id=griddly-ButterfliesEnvLarge --model=sadapt-bandit --buffer_type=bernoulli --normalize_int_reward=1 --soft_reset=0 --total_timesteps=15_000_000 --exploration_fraction=0.5 
+python scripts/cleanrl_dqn.py --env_id=MinAtar/Freeway --model=sadapt-bandit --buffer_type=bernoulli --normalize_int_reward=1 --soft_reset=0 --total_timesteps=15_000_000 --exploration_fraction=0.5
 ```
 Check the file ```gymnasium_wrappers/args.py``` to knwo more about the algorithm hyperparametrs.
 
@@ -38,10 +39,6 @@ Check the file ```gymnasium_wrappers/args.py``` to knwo more about the algorithm
 ### Supported Environments
 | Environment name    | ID |
 | -------- | ------- |
-| Large Butterflies  | griddly-ButterfliesEnvLarge    |
-| Small Butterflies | griddly-ButterfliesEnv |
-| Small Maze    | griddly-MazeEnv    |
-| Large Maze    | griddly-MazeEnvLarge    |
 | Breakout(MinAtar)    | MinAtar/Breakout    |
 | Freeway(MinAtar)    | MinAtar/Freeway    |
 | Seaquest(MinAtar)    | MinAtar/Seaquest    |
